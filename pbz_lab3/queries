@@ -1,0 +1,30 @@
+//1. Получить имена всех загр. веществ
+MATCH (n:Pollutant) RETURN n.name
+
+//2. Получить имена всех загр. веществ в выбросе "Discharge 1"
+MATCH (d:Discharge) -[:DISCHARGES_POLLUTANT]-> (c:Pollutant) WHERE d.name = "Discharge 1" RETURN c.name
+
+//3. Получить список компаний выбрасывающих загр. вещество KOH
+MATCH (c:Company) -[:HAS_DISCHARGE]-> (d:Discharge) -[:DISCHARGES_POLLUTANT]-> (p:Pollutant) WHERE p.name = "KOH" RETURN c.name
+
+//4. Получить количество выбросов произведенных компанией "Company 1"
+MATCH (c:Company) -[:HAS_DISCHARGE]-> (d:Discharge) WHERE c.name = "Company 1" RETURN COUNT(d)
+
+//5. Получить количество выбросов произведенных компанией "Company 1" после 12 декабря 2020
+MATCH (c:Company) -[:HAS_DISCHARGE]-> (d:Discharge) WHERE c.name = "Company 1" AND d.date > date("2020-12-12") RETURN COUNT(d)
+
+//6. Получить названия и даты выбросов любых компаний, где концентрация хотя бы одного из загр. веществ больше 0.02
+MATCH (d:Discharge) -[dp:DISCHARGES_POLLUTANT]-> (p:Pollutant) WHERE dp.concentration > 0.02 RETURN DISTINCT d.name, d.date
+
+//7. Получить названия и даты выбросов любых компаний, где средняя концентрация загр. веществ больше 0.3
+MATCH (d:Discharge) -[dp:DISCHARGES_POLLUTANT]-> (p:Pollutant) WITH AVG(dp.concentration) AS avg_concentration, d.name AS name,
+ d.date AS date WHERE avg_concentration > 0.3 RETURN DISTINCT name, date
+ 
+//8. Получить список пар компания-загрязнитель, в которых компания относит загрязнитель к классу опасности A
+MATCH (c:Company) -[cp:CLASSIFIES_POLLUTANT]-> (p:Pollutant) WHERE cp.danger_class = "A" RETURN c.name, p.name
+
+//9. Получить список используемых контрольных створов (targets) для компании "Company 1"
+MATCH (c:Company) -[:HAS_DISCHARGE]-> (d:Discharge) -[:USES_TARGET]-> (t:Target) WHERE c.name = "Company 1" RETURN t.name
+
+//10. Получить список загр. веществ выброшенных между 2020-10-10 и 2020-10-14
+MATCH (d:Discharge) -[dp:DISCHARGES_POLLUTANT]-> (p:Pollutant) WHERE d.date > date("2020-10-10") AND d.date < date("2020-10-14") RETURN p.name

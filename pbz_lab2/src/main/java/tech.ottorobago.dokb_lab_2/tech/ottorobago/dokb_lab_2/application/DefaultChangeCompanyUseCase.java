@@ -1,0 +1,35 @@
+package tech.ottorobago.dokb_lab_2.application;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import tech.ottorobago.dokb_lab_2.application.data.CompanyData;
+import tech.ottorobago.dokb_lab_2.application.data.CompanyDataToCompanyConverter;
+import tech.ottorobago.dokb_lab_2.persistence.CompanyPlacer;
+import tech.ottorobago.dokb_lab_2.persistence.PersistenceException;
+
+public class DefaultChangeCompanyUseCase implements ChangeCompanyUseCase {
+    private CompanyPlacer companyPlacer;
+    private CompanyDataToCompanyConverter companyDataToCompanyConverter;
+
+    private static final Logger logger = LogManager.getLogger(DefaultChangeCompanyUseCase.class.getName());
+
+    public DefaultChangeCompanyUseCase(CompanyPlacer companyPlacer, CompanyDataToCompanyConverter companyDataToCompanyConverter) {
+        this.companyPlacer = companyPlacer;
+        this.companyDataToCompanyConverter = companyDataToCompanyConverter;
+    }
+
+    @Override
+    public void changeCompany(CompanyData companyData) throws ApplicationException {
+        try {
+            companyPlacer.saveCompany(
+                    companyDataToCompanyConverter
+                            .convertCompanyDataToCompany(companyData));
+        } catch (PersistenceException exc) {
+            String mes = "Unable to update data in the persistence layer";
+
+            logger.error(mes, exc);
+
+            throw new ApplicationException(mes);
+        }
+    }
+}

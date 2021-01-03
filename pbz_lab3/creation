@@ -1,0 +1,47 @@
+CREATE
+ (company : Company{
+    name : "Company 1"
+ }),
+ (discharge : Discharge{
+    name : "Discharge 1",
+    date : date("2020-10-12"),
+    diameter : 10.9,
+    minimal_water_speed : 10.0,
+    wastewater_consumption : 100.98,
+    angle : 9.00,
+    distance_to_surface : 100.0,
+    distance_to_shore : 101.98
+ }),
+ (target : Target{
+    name : "Target 1",
+    distance : 809.99
+ }),
+ (pollutant_1 : Pollutant{
+    name : "Co2"
+ }),
+ (pollutant_2 : Pollutant{
+    name : "KOH"
+ }),
+ 
+ (company) -[:HAS_DISCHARGE]-> (discharge),
+ (discharge) -[:USES_TARGET]-> (target),
+ (company) -[:CLASSIFIES_POLLUTANT{
+    danger_class : "A",
+    lfv_group : "290.1"
+ }]-> (pollutant_1),
+ (company) -[:CLASSIFIES_POLLUTANT{
+    danger_class : "C",
+    lfv_group : "294.1"
+ }]-> (pollutant_2),
+ (discharge) -[:DISCHARGES_POLLUTANT{
+    concentration : 0.03,
+    ncc : 0.9,
+    background_concentration : 0.97,
+    mpc : 0.99
+ }]-> (pollutant_1),
+ (discharge) -[:DISCHARGES_POLLUTANT{
+    concentration : 0.73,
+    ncc : 0.4,
+    background_concentration : 0.3,
+    mpc : 0.21
+ }]-> (pollutant_2)
